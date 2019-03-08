@@ -1,0 +1,8 @@
+---
+applications:
+  - name: cs-demo
+    memory: 1024M
+    path: target/cs-demo.jar
+    host: cs-demo
+    services:
+      - cs-demo-config-server
