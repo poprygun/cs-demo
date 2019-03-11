@@ -12,25 +12,28 @@ cf install-plugin -r CF-Community "spring-cloud-services"
 
 ```bash
 cf create-service p-config-server standard cs-demo-config-server -c '{"git": {"uri": "https://github.com/poprygun/cs-demo-config"}}'
-
 ```
 
-## You can further customise the configuration repo if needed
+or load from configuration file
+
+```bash
+cf create-service p-config-server standard cs-demo-config-server -c ./config-server.json 
+```
+
+## You can further customise the configuration repo if needed using config below.
+
+It could serve the git directory structure that has properties for multiple projects in subfolders, thus `{application}` 
 
 ```json
 {
   "git": {
-    "uri": "https://github.com/spring-cloud-samples/config-repo",
-    "repos": {
-      "cook": {
-        "pattern": "cook*",
-        "uri": "https://github.com/spring-cloud-services-samples/cook-config"
-      }
-    }
-  },
-  "count": 3
+    "uri": "https://github.com/poprygun/cs-demo-config",
+    "searchPaths": "{application}"
+  }
 }
 ```
+
+
 
 ## Endpoint should render data in application.yml that was deployed in config repository 'newheaven' in our case
 
