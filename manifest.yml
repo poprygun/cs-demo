@@ -6,3 +6,4 @@ applications:
     host: cs-demo
     services:
       - cs-demo-config-server
+      - my-credhub-instance

@@ -35,8 +35,12 @@ class PropertiesServer {
 class Show{
 
     @Bean
-    public String showMe(@Value("${location:mars}") String location){
-        System.out.println("=========================> " + location);
+    public String showValueFromConfigServer(@Value("${location:not-set}") String location
+    , @Value("${clientId:not-set}") String clientId
+    , @Value("${secret:not-set}") String secret){
+        System.out.println("Config Server =========================> " + location);
+        System.out.println("CredHub =========================> " + clientId);
+        System.out.println("CredHub =========================> " + secret);
         return location;
     }
 

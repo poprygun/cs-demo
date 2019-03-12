@@ -5,6 +5,9 @@ management:
     web:
       exposure:
         include: "*"
+---
+spring:
+  profiles: cloud
 
-
-
+clientId: ${vcap.services.my-credhub-instance.credentials.clientId}
+secret: ${vcap.services.my-credhub-instance.credentials.secret}
