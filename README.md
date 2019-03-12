@@ -6,27 +6,10 @@
 cf install-plugin -r CF-Community "spring-cloud-services"
 ```
 
-## Create Config Service
+## _Create Config Service_
 
-```bash
-cf create-service p-config-server standard cs-demo-config-server -c '{"git": {"uri": "https://github.com/poprygun/cs-demo-config"}}'
-```
 
-## Create [Credhub Service](https://docs.pivotal.io/credhub-service-broker/using.html)
-
-Variables can be accessed by [directly referencing `vcap`](https://pivotal.io/application-transformation-recipes/security/securing-applications-with-credhub)
-
-```bash
-cf create-service credhub default my-credhub-instance -c ./credhub.json
-cf update-service my-credhub-instance -c ./credhub.json
-```
-or load from configuration file
-
-```bash
-cf create-service p-config-server standard cs-demo-config-server -c ./config-server.json 
-```
-
-## You can further customise the configuration repo if needed using config below.
+## You can customise the configuration repo if needed using config below.
 
 It could serve the git directory structure that has properties for multiple projects in subfolders, thus `{application}` 
 
@@ -39,6 +22,13 @@ It could serve the git directory structure that has properties for multiple proj
 }
 ```
 
+```bash
+cf create-service p-config-server standard cs-demo-config-server -c '{"git": {"uri": "https://github.com/poprygun/cs-demo-config"}}'
+cf update-service cs-demo-config-server -c ./config-server.json 
+```
+
+
+
 ## To [get a token](https://gist.github.com/kelapure/1670b881b02cf3abe77891ea55d411fc)
 
 ```bash
@@ -49,6 +39,25 @@ http --body --form POST https://p-spring-cloud-services.uaa.run.pcfone.io/oauth/
 
 provide token obtained from previous request
 post to https://config-7307bf5b-d9a2-416f-a7d3-d8891aea26fa.apps.pcfone.io/demo-config-extra/cloud
+
+
+## _Create [Credhub Service](https://docs.pivotal.io/credhub-service-broker/using.html)_
+
+Variables can be accessed by [directly referencing `vcap`](https://pivotal.io/application-transformation-recipes/security/securing-applications-with-credhub)
+
+### Define secrets configuration file
+
+```json
+{
+  "clientId": "top-secret-client-id",
+  "secret": "top-secret-secret-nowone-should-know"
+}
+```
+
+```bash
+cf create-service credhub default my-credhub-instance -c ./credhub.json
+cf update-service my-credhub-instance -c ./credhub.json
+```
 
 
 ## Endpoint should render data in application.yml that was deployed in config repository 'newheaven' in our case
