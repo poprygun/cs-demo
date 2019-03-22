@@ -23,7 +23,7 @@ It could serve the git directory structure that has properties for multiple proj
 ```
 
 ```bash
-cf create-service p-config-server standard cs-demo-config-server -c '{"git": {"uri": "https://github.com/poprygun/cs-demo-config"}}'
+cf create-service p-config-server standard cs-demo-config-server -c '{"git": {"uri": "https://github.com/poprygun/cs-demo-config"}, "encrypt": { "key": "some key to use" }}'
 cf update-service cs-demo-config-server -c ./config-server.json 
 ```
 
@@ -63,3 +63,63 @@ cf update-service my-credhub-instance -c ./credhub.json
 ## Endpoint should render data in application.yml that was deployed in config repository 'newheaven' in our case
 
 [Test Endpoint](https://cs-demo.apps.pcfone.io/where)
+
+## [Encryption](https://docs.run.pivotal.io/spring-cloud-services/config-server/configuring-with-git.html#encryption-and-encrypted-values)
+
+
+### Specify `encryption key` (or key if using assymetric encryption)
+
+cf create-service p-config-server trial encryption-config-server -c '{"git": {"uri": "https://github.com/poprygun/cs-demo-config"}, "encrypt": { "key": "some key to use" }}'
+
+
+### Create service key to access Config Server service instance
+
+```bash
+cf create-service-key encryption-config-server config-server-key
+```
+
+### Collect service key info
+
+```bash
+cf service-key encryption-config-server config-server-key
+
+```
+
+```json
+{
+ "access_token_uri": "https://p-spring-cloud-services.uaa.run.pivotal.io/oauth/token",
+ "client_id": "p-config-server-835786a3-44ec-4a70-9f61-337a2551e3ff",
+ "client_secret": "mD7vF09cyUlv",
+ "uri": "https://config-24b15704-94d7-4494-8263-82a9ac30c731.cfapps.io"
+}
+```
+
+
+## [Accessing encrypt API endpoint](https://docs.pivotal.io/spring-cloud-services/1-5/service-broker-and-instances.html#get-access-token-for-direct-requests-to-a-service-instance)
+
+### Access using cf cli
+
+```bash
+curl -H "Authorization: $(cf oauth-token)" https://p-spring-cloud-services.uaa.run.pivotal.io/encrypt -d 'Value to be encrypted'
+```
+
+### Access using curl
+
+- Obtain an access token
+
+```bash
+export USER=cf-username
+export PASSWORD=cf-password
+
+access_token="Bearer $(curl -k -XPOST -H"Application/json" -u "cf:" \
+--data "username=${USER}&password=${PASSWORD}&client_id=cf&grant_type=password&response_type=token" \
+https://login.run.pivotal.io/oauth/token | jq '.access_token')"
+
+```
+
+- Encrypt the secret value
+
+```bash
+curl -k -v -XPOST -H "Authorization: Bearer ${access_token}" https://config-24b15704-94d7-4494-8263-82a9ac30c731.cfapps.io/encrypt -d 'Value to be encrypted'
+
+```
